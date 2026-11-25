@@ -4,22 +4,26 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        // Usa ForgeGradle 3+, que entende o novo formato UserDev 3 da 1.12.2
+        // ForgeGradle 3+ é OBRIGATÓRIO para ler o formato UserDev 3 da 1.12.2
         classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
+    }
+    // Força o uso do Gradle 4.9/5.x internamente se houver conflito
+    configurations.classpath {
+        resolutionStrategy {
+            force 'net.minecraftforge.gradle:ForgeGradle:3.+'
+        }
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
 
 version = '1.0.0'
 group = 'com.example.waterbucketrelease'
 archivesBaseName = 'waterbucketrelease'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+sourceCompatibility = targetCompatibility = '1.8'
 
 minecraft {
-    // Mappings estáveis para 1.12.2
     mappings channel: 'stable', version: '39-1.12'
     
     runs {
@@ -36,17 +40,17 @@ minecraft {
 }
 
 dependencies {
-    // Aponta para a versão 2859, que é a recomendada e está intacta
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2859'
 }
 
 processResources {
+    // Hardcodamos "1.12.2" aqui para evitar o bug de avaliação do FG3
     inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+    inputs.property "mcversion", "1.12.2"
 
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version': project.version, 'mcversion': "1.12.2"
     }
     
     from(sourceSets.main.resources.srcDirs) {
@@ -61,12 +65,12 @@ jar {
             "Specification-Vendor": "agentzz",
             "Specification-Version": "1",
             "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
+            "Implementation-Version": project.version,
             "Implementation-Vendor" :"agentzz",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
 
-// Garante que o jar seja reofuscado para funcionar no Minecraft real
+// Garante que o jar final seja reofuscado para funcionar no jogo
 jar.finalizedBy('reobfJar')
