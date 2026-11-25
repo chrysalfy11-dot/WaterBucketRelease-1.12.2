@@ -1,0 +1,11 @@
+[
+  {
+    "modid": "waterbucketrelease",
+    "name": "WATER BUCKET. RELEASE! (Backport 1.12.2)",
+    "description": "Drop a water bucket while crouching in midair to hurl water at sonic speeds.",
+    "version": "1.0.0",
+    "mcversion": "1.12.2",
+    "authorList": ["SEU_NOME (backport)", "theexiiedfeiiow_ (mod original)"],
+    "credits": "Baseado em WATER BUCKET. RELEEEEEASE! por theexiiedfeiiow_ (CurseForge projeto 1236462)."
+  }
+]
