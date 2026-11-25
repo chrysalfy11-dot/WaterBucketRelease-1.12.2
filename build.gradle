@@ -1,25 +1,72 @@
-// ForgeGradle 2.3 (Forge 1.12.2). Requer Java 8 e Gradle 4.9 (use o gradlew do MDK oficial).
 buildscript {
     repositories {
+        maven { url = 'https://maven.minecraftforge.net/' }
         mavenCentral()
-        jcenter()
-        maven { name = "forge"; url = "https://maven.minecraftforge.net" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        // Usa ForgeGradle 3+, que entende o novo formato UserDev 3 da 1.12.2
+        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.0.0"
-group = "com.example.waterbucketrelease"
-archivesBaseName = "waterbucketrelease-1.12.2"
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
 
-sourceCompatibility = targetCompatibility = '1.8'
-compileJava { sourceCompatibility = targetCompatibility = '1.8' }
+version = '1.0.0'
+group = 'com.example.waterbucketrelease'
+archivesBaseName = 'waterbucketrelease'
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
-    version = "1.12.2-14.23.5.2859"
-    runDir = "run"
-    mappings = "stable_39"
+    // Mappings estáveis para 1.12.2
+    mappings channel: 'stable', version: '39-1.12'
+    
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+        }
+        server {
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+        }
+    }
 }
+
+dependencies {
+    // Aponta para a versão 2859, que é a recomendada e está intacta
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2859'
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+    
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+            "Specification-Title": "waterbucketrelease",
+            "Specification-Vendor": "agentzz",
+            "Specification-Version": "1",
+            "Implementation-Title": project.name,
+            "Implementation-Version": "${version}",
+            "Implementation-Vendor" :"agentzz",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+// Garante que o jar seja reofuscado para funcionar no Minecraft real
+jar.finalizedBy('reobfJar')
