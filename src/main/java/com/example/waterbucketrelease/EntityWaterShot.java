@@ -24,12 +24,12 @@ public class EntityWaterShot extends EntityThrowable {
         super.onUpdate();
         if (world.isRemote) {
             for (int i = 0; i < 3; i++) {
-                // Assinatura exata da 1.12.2: Enum, x, y, z, count(int), xOff(double), yOff(double), zOff(double)
+                // CORREÇÃO FINAL: removido o parâmetro 'count' que não existe na 1.12.2
                 world.spawnParticle(EnumParticleTypes.DRIP_WATER,
                     posX + (rand.nextDouble() - .5) * .4, 
                     posY + (rand.nextDouble() - .5) * .4,
                     posZ + (rand.nextDouble() - .5) * .4, 
-                    0, 0.0D, 0.0D, 0.0D);
+                    0.0D, 0.0D, 0.0D);
             }
             return;
         }
@@ -44,7 +44,6 @@ public class EntityWaterShot extends EntityThrowable {
         if (r.typeOfHit == RayTraceResult.Type.ENTITY && r.entityHit != null) {
             r.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, getThrower()), 0F);
         } else if (r.sideHit != null) {
-            // CORREÇÃO 1.12.2: usa-se 'add' em vez de 'addVector'
             at = at.add(r.sideHit.getXOffset() * 0.01, r.sideHit.getYOffset() * 0.01, r.sideHit.getZOffset() * 0.01);
         }
         splash(at.x, at.y, at.z);
